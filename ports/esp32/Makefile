@@ -133,6 +133,7 @@ SRC_C = \
 	machine_adc.c \
 	machine_dac.c \
 	machine_pwm.c \
+	machine_sleep.c \
 	machine_uart.c \
 	modmachine.c \
 	modnetwork.c \

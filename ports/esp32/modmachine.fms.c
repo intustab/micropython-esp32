@@ -96,6 +96,57 @@ STATIC mp_obj_t machine_enable_irq(mp_obj_t state_in) {
 }
 MP_DEFINE_CONST_FUN_OBJ_1(machine_enable_irq_obj, machine_enable_irq);
 
+// --------------------------- fms ---------------------------------------------------------
+
+STATIC mp_obj_t machine_deep_sleep_start(void) {
+	esp_deep_sleep_start();
+    return mp_const_none;
+}
+MP_DEFINE_CONST_FUN_OBJ_0(machine_deep_sleep_start_obj, machine_deep_sleep_start);
+
+STATIC mp_obj_t machine_get_wakeup_cause(void) {
+    return mp_obj_new_int(esp_sleep_get_wakeup_cause());
+}
+MP_DEFINE_CONST_FUN_OBJ_0(machine_get_wakeup_cause_obj, machine_get_wakeup_cause);
+
+#if 0
+// returns a uint64_t -- need to figure out how to do that
+STATIC mp_obj_t machine_get_ext1_wakeup_status(void) {
+    return mp_obj_new_int(state);
+}
+MP_DEFINE_CONST_FUN_OBJ_0(machine_get_ext1_wakeup_status_obj, machine_get_ext1_wakeup_status);
+#endif
+
+STATIC mp_obj_t machine_get_touchpad_wakeup_status(void) {
+    return mp_obj_new_int(esp_sleep_get_touchpad_wakeup_status());
+}
+MP_DEFINE_CONST_FUN_OBJ_0(machine_get_touchpad_wakeup_status_obj, machine_get_touchpad_wakeup_status);
+
+STATIC mp_obj_t machine_enable_touchpad_wakeup(void) {
+    return mp_obj_new_int(esp_sleep_enable_touchpad_wakeup());
+}
+MP_DEFINE_CONST_FUN_OBJ_0(machine_enable_touchpad_wakeup_obj, machine_enable_touchpad_wakeup);
+
+STATIC mp_obj_t machine_enable_timer_wakeup(mp_obj_t high32, mp_obj_t low32) {
+    uint32_t h32 = mp_obj_get_int(high32);
+    uint32_t l32 = mp_obj_get_int(low32);
+	uint64_t time_in_us = ((uint64_t)h32)<<32 | l32;
+
+	return mp_obj_new_int(esp_sleep_enable_timer_wakeup(time_in_us));
+}
+MP_DEFINE_CONST_FUN_OBJ_2(machine_enable_timer_wakeup_obj, machine_enable_timer_wakeup);
+
+STATIC mp_obj_t machine_enable_ulp_wakeup(void) {
+    return mp_obj_new_int(esp_sleep_enable_ulp_wakeup());
+}
+MP_DEFINE_CONST_FUN_OBJ_0(machine_enable_ulp_wakeup_obj, machine_enable_ulp_wakeup);
+
+STATIC mp_obj_t machine_light_sleep_start(void) {
+    return mp_obj_new_int(esp_light_sleep_start());
+}
+MP_DEFINE_CONST_FUN_OBJ_0(machine_light_sleep_start_obj, machine_light_sleep_start);
+
+// --------------------------- fms ---------------------------------------------------------
 
 STATIC const mp_rom_map_elem_t machine_module_globals_table[] = {
     { MP_ROM_QSTR(MP_QSTR___name__), MP_ROM_QSTR(MP_QSTR_umachine) },
@@ -112,6 +163,16 @@ STATIC const mp_rom_map_elem_t machine_module_globals_table[] = {
     { MP_ROM_QSTR(MP_QSTR_disable_irq), MP_ROM_PTR(&machine_disable_irq_obj) },
     { MP_ROM_QSTR(MP_QSTR_enable_irq), MP_ROM_PTR(&machine_enable_irq_obj) },
 
+	// ------------------------- fms ------------------------------------------
+    { MP_ROM_QSTR(MP_QSTR_deep_sleep_start), MP_ROM_PTR(&machine_deep_sleep_start_obj) },
+    { MP_ROM_QSTR(MP_QSTR_get_wakeup_cause), MP_ROM_PTR(&machine_get_wakeup_cause_obj) },
+    // { MP_ROM_QSTR(MP_QSTR_get_ext1_wakeup_status), MP_ROM_PTR(&machine_get_ext1_wakeup_status_obj) },
+    { MP_ROM_QSTR(MP_QSTR_get_touchpad_wakeup_status), MP_ROM_PTR(&machine_get_touchpad_wakeup_status_obj) },
+    { MP_ROM_QSTR(MP_QSTR_enable_touchpad_wakeup), MP_ROM_PTR(&machine_enable_touchpad_wakeup_obj) },
+    { MP_ROM_QSTR(MP_QSTR_enable_ulp_wakeup), MP_ROM_PTR(&machine_enable_ulp_wakeup_obj) },
+    { MP_ROM_QSTR(MP_QSTR_enable_timer_wakeup), MP_ROM_PTR(&machine_enable_timer_wakeup_obj) },
+    { MP_ROM_QSTR(MP_QSTR_light_sleep_start), MP_ROM_PTR(&machine_light_sleep_start_obj) },
+	// ------------------------- fms ------------------------------------------
 
     { MP_ROM_QSTR(MP_QSTR_time_pulse_us), MP_ROM_PTR(&machine_time_pulse_us_obj) },
 
@@ -124,7 +185,6 @@ STATIC const mp_rom_map_elem_t machine_module_globals_table[] = {
     { MP_ROM_QSTR(MP_QSTR_DAC), MP_ROM_PTR(&machine_dac_type) },
     { MP_ROM_QSTR(MP_QSTR_I2C), MP_ROM_PTR(&machine_i2c_type) },
     { MP_ROM_QSTR(MP_QSTR_PWM), MP_ROM_PTR(&machine_pwm_type) },
-    { MP_ROM_QSTR(MP_QSTR_SLEEP), MP_ROM_PTR(&machine_sleep_type) },
     { MP_ROM_QSTR(MP_QSTR_SPI), MP_ROM_PTR(&mp_machine_soft_spi_type) },
     { MP_ROM_QSTR(MP_QSTR_UART), MP_ROM_PTR(&machine_uart_type) },
 };
