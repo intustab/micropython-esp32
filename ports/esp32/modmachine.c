@@ -109,13 +109,28 @@ STATIC mp_obj_t machine_get_wakeup_cause(void) {
 }
 MP_DEFINE_CONST_FUN_OBJ_0(machine_get_wakeup_cause_obj, machine_get_wakeup_cause);
 
-#if 0
-// returns a uint64_t -- need to figure out how to do that
+STATIC mp_obj_t machine_enable_ext0_wakeup(mp_obj_t gpio_num, mp_obj_t level) {
+	return mp_obj_new_int( esp_sleep_enable_ext0_wakeup(mp_obj_get_int(gpio_num), mp_obj_get_int(level) ) );
+}
+MP_DEFINE_CONST_FUN_OBJ_2(machine_enable_ext0_wakeup_obj, machine_enable_ext0_wakeup);
+
+STATIC mp_obj_t machine_enable_ext1_wakeup(mp_obj_t mask_h32, mp_obj_t mask_l32, mp_obj_t mode) {
+    uint32_t h32 = mp_obj_get_int(mask_h32);
+    uint32_t l32 = mp_obj_get_int(mask_l32);
+	uint64_t mask = ((uint64_t)h32)<<32 | l32;
+
+	return mp_obj_new_int(esp_sleep_enable_ext1_wakeup(mask, mp_obj_get_int(mode)));
+}
+MP_DEFINE_CONST_FUN_OBJ_3(machine_enable_ext1_wakeup_obj, machine_enable_ext1_wakeup);
+
+
 STATIC mp_obj_t machine_get_ext1_wakeup_status(void) {
-    return mp_obj_new_int(state);
+	uint64_t status = esp_sleep_get_ext1_wakeup_status();
+
+	mp_obj_t status_obj = mp_obj_new_bytearray(sizeof(uint64_t), &status);
+    return status_obj;
 }
 MP_DEFINE_CONST_FUN_OBJ_0(machine_get_ext1_wakeup_status_obj, machine_get_ext1_wakeup_status);
-#endif
 
 STATIC mp_obj_t machine_get_touchpad_wakeup_status(void) {
     return mp_obj_new_int(esp_sleep_get_touchpad_wakeup_status());
@@ -166,11 +181,14 @@ STATIC const mp_rom_map_elem_t machine_module_globals_table[] = {
 	// ------------------------- fms ------------------------------------------
     { MP_ROM_QSTR(MP_QSTR_deep_sleep_start), MP_ROM_PTR(&machine_deep_sleep_start_obj) },
     { MP_ROM_QSTR(MP_QSTR_get_wakeup_cause), MP_ROM_PTR(&machine_get_wakeup_cause_obj) },
-    // { MP_ROM_QSTR(MP_QSTR_get_ext1_wakeup_status), MP_ROM_PTR(&machine_get_ext1_wakeup_status_obj) },
+
+    { MP_ROM_QSTR(MP_QSTR_get_ext1_wakeup_status), MP_ROM_PTR(&machine_get_ext1_wakeup_status_obj) },
     { MP_ROM_QSTR(MP_QSTR_get_touchpad_wakeup_status), MP_ROM_PTR(&machine_get_touchpad_wakeup_status_obj) },
     { MP_ROM_QSTR(MP_QSTR_enable_touchpad_wakeup), MP_ROM_PTR(&machine_enable_touchpad_wakeup_obj) },
     { MP_ROM_QSTR(MP_QSTR_enable_ulp_wakeup), MP_ROM_PTR(&machine_enable_ulp_wakeup_obj) },
     { MP_ROM_QSTR(MP_QSTR_enable_timer_wakeup), MP_ROM_PTR(&machine_enable_timer_wakeup_obj) },
+    { MP_ROM_QSTR(MP_QSTR_enable_ext0_wakeup), MP_ROM_PTR(&machine_enable_ext0_wakeup_obj) },
+    { MP_ROM_QSTR(MP_QSTR_enable_ext1_wakeup), MP_ROM_PTR(&machine_enable_ext1_wakeup_obj) },
     { MP_ROM_QSTR(MP_QSTR_light_sleep_start), MP_ROM_PTR(&machine_light_sleep_start_obj) },
 	// ------------------------- fms ------------------------------------------
 
