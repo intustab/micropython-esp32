@@ -86,6 +86,7 @@ INC_ESPCOMP += -I$(ESPCOMP)/app_trace/include
 CFLAGS_BASE = -std=gnu99 -Os -ffunction-sections -fdata-sections -fstrict-volatile-bitfields -mlongcalls -nostdlib -Wall -Werror -Wno-error=unused-function -Wno-error=unused-but-set-variable -Wno-error=unused-variable -Wno-error=deprecated-declarations -DMBEDTLS_CONFIG_FILE='"mbedtls/esp_config.h"' -DHAVE_CONFIG_H -DESP_PLATFORM
 CFLAGS = $(CFLAGS_BASE) $(INC) $(INC_ESPCOMP)
 CFLAGS += -DIDF_VER=\"$(IDF_VER)\"
+CFLAGS += -DMP_DEV_VERSION=\"fms\(machine.SLEEP\)\"
 CFLAGS += $(CFLAGS_MOD)
 
 # this is what ESPIDF uses for c++ compilation
