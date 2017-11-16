@@ -220,6 +220,7 @@ ESPIDF_ESP32_O = $(addprefix $(ESPCOMP)/esp32/,\
 	esp_timer.o \
 	esp_timer_esp32.o \
 	ets_timer_legacy.o \
+	sleep_modes.o \
 	event_default_handlers.o \
 	fast_crypto_ops.o \
 	task_wdt.o \
